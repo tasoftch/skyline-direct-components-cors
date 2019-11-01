@@ -43,8 +43,10 @@ class HotlinkProtectionDeliveryPlugin
 {
     public function checkForKnownHosts(string $eventName, DeliverEvent $event, $eventManager, ...$arguments)
     {
-        $host = CORSService::getHostOfRequest($event->getRequest());
-        if(!CORSService::isRegistered( $host )) {
+        CORSService::getHostOfRequest($event->getRequest(), $host);
+        CORSService::getOriginOfRequest($event->getRequest(), $origin);
+
+        if($host != $origin && !CORSService::isRegistered( $host )) {
             $e = new SkylineKernelDetailedException("CORS Protection", 403);
             $e->setDetails("The cross origin resource sharing plugin denied delivery of this contents");
             throw $e;
